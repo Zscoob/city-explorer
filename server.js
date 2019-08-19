@@ -31,6 +31,7 @@ app.get('/weather',(request, response) => {
     response.send('Hot');
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
     console.log('server is listening');
 });
