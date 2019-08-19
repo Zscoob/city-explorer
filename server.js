@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.get('/location',(request, response) => {
     try{
     const geoData = require('./geo.json');
     const location = new Location(request.query.location, geoData)
+    //throw new Error();
     response.send(location);
     } catch(error){
         response.status(500).send('sorry, something went wrong')
