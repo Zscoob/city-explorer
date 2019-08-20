@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const superagent = require('superagent');
 
 const app = express();
 app.use(cors());
@@ -12,11 +13,16 @@ app.get('/',(request, response) => {
 app.get('/location',(request, response) => {
     // response.send('here');
     try{
-    const geoData = require('./geo.json');
-    const location = new Location(request.query.location, geoData)
+    superagent.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${request.query.data}&key=${process.env.GEOCODEAPI_KEY}`)
+    .then((geoData) => {
+    const location = new Location(request.query.data, geoData.body);
     //throw new Error();
+    //console.log(geoData)
     response.send(location);
+    });
+
     } catch(error){
+        console.log(error);
         response.status(500).send('sorry, something went wrong')
     }
 });
@@ -38,29 +44,7 @@ app.get('/weather',(request, response) => {
     } catch(error){
         response.status(500).send('you dun goofed')
     }
-})
-
-// function dhm(t){
-//     let cd = 24 * 60 * 60 * 1000,
-//         ch = 60 * 60 * 1000,
-//         y = ,
-//         m = ,
-//         d = Math.floor(t / cd),
-//         h = Math.floor((t - d * cd) / ch),
-//         m = Math.round((t - d * cd - h * ch) / 60000),
-//         pad = function(n){return n < 10 ? '0' + n : n;
-//     };
-//     if(m === 60){
-//         h++;
-//         m = 0;
-//     }
-//     if(h === 24){
-//         d++;
-//         h = 0;
-//     }
-//     return [d, pad(h), pad(m)].join(':');
-// } 
- // this.time = dhm(darkskyData.daily.data[0].time * 1000);
+});
 
 let myDate = function(milli){
     let date = new Date(milli);
@@ -76,7 +60,9 @@ function Weather(darkskyData){
             'time': date.toString().slice(0, 15)
         })
     this.weather = days;
-    }}
+    }};
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
