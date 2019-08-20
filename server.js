@@ -34,7 +34,7 @@ app.get('/weather',(request, response) => {
     try{
         const darkskyData = require('./darksky.json')
         const weather = new Weather(darkskyData)
-        response.send(weather);
+        response.send(weather.weather);
     } catch(error){
         response.status(500).send('you dun goofed')
     }
