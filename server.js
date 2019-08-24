@@ -231,7 +231,7 @@ function getYelps(req, res){
         })
       }
   })
-}
+
 
 function getMovies(req, res){
   lookupData({
@@ -250,10 +250,18 @@ function getMovies(req, res){
         }
       },
       cacheMiss: function(){
-        const url = ''
+        const url = `https://api.themoviedb.org/3/search/movie/?api_key=${process.env.MOVIE_API_KEY}&language=en-US&page=1&query=${req.query.data.search_query}`
+        superagent.get(url)
+        .then(movieData => {
+          const movieSummaries = movieData.body.daily.data.map(day => {
+            const summary = new Movies(day);
+            summary.save(req.query.data.id);
+            return summary
+          });
+          res.send(movieSummaries)
+        })
       }
   })
-}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
